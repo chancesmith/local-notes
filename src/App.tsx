@@ -71,8 +71,9 @@ function App() {
   }
 
   function handleFavoriteNote(note: Note) {
-    favoriteNote(note);
+    const updatedNote = favoriteNote(note);
     const notes = getNotes();
+    setSelectedNote(updatedNote);
     setNotes(notes);
   }
 
@@ -88,6 +89,16 @@ function App() {
             .sort((a, b) => {
               // sort by updatedAt
               return dayjs(b.updatedAt).diff(dayjs(a.updatedAt));
+            })
+            .sort((a, b) => {
+              // sort by isFavorite
+              if (a.isFavorite === b.isFavorite) {
+                return 0;
+              } else if (a.isFavorite) {
+                return -1;
+              } else {
+                return 1;
+              }
             })
             ?.map((note) => (
               <div
@@ -111,7 +122,13 @@ function App() {
                   />
                   <p>
                     {note.content.length
-                      ? note.content.split(" ").slice(0, 15).join(" ") + "..."
+                      ? note.content
+                          .split("\n")
+                          .slice(1, -1)
+                          .join("\n")
+                          .split(" ")
+                          .slice(0, 15)
+                          .join(" ") + "..."
                       : null}
                   </p>
                   <p>
