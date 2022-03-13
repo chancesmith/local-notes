@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef } from "react";
 import "./App.css";
-import { createNote, getAllNotes, updateNote } from "./api_notes";
+import { createNote, favoriteNote, getAllNotes, updateNote } from "./api_notes";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
@@ -70,6 +70,12 @@ function App() {
     setNotes(notes);
   }
 
+  function handleFavoriteNote(note: Note) {
+    favoriteNote(note);
+    const notes = getNotes();
+    setNotes(notes);
+  }
+
   return (
     <div className="root">
       <div className="app">
@@ -96,17 +102,21 @@ function App() {
                       ? note.content.split("\n").slice(0, 1).join(" ")
                       : "New Note"}
                   </h2>
+                  <i
+                    className={`c-star c-notes-list__item__star ${
+                      note.isFavorite ? "fas fa-star c-star--favorited" : ""
+                    }`}
+                  />
+                  <p>
+                    {note.content.length
+                      ? note.content.split(" ").slice(0, 15).join(" ") + "..."
+                      : null}
+                  </p>
                   <p>
                     {/* created: {dayjs(note.createdAt).format("MM/DD/YY")}{" "} */}
                     {note.updatedAt ? (
                       <span>{dayjs(note.updatedAt).fromNow()}</span>
                     ) : null}
-                  </p>
-
-                  <p>
-                    {note.content.length
-                      ? note.content.split(" ").slice(0, 15).join(" ") + "..."
-                      : null}
                   </p>
                 </div>
               </div>
@@ -116,9 +126,16 @@ function App() {
           {selectedNote ? (
             <>
               <h2>Edit Note</h2>
+
               {selectedNote.content.length ? (
                 <h3>
                   {selectedNote.content.split("\n").slice(0, 1).join(" ")}
+                  <i
+                    className={`c-star fa-star c-edit-note__star ${
+                      selectedNote.isFavorite ? "fas c-star--favorited" : "fal"
+                    }`}
+                    onClick={() => handleFavoriteNote(selectedNote)}
+                  />
                 </h3>
               ) : null}
               <textarea

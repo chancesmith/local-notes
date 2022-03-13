@@ -1,5 +1,6 @@
 import {
   createNote,
+  favoriteNote,
   getAllNotes,
   storeAllNotes,
   updateNote,
@@ -126,5 +127,26 @@ describe("notes api", () => {
       ...notes,
       [updatedNote.id]: updatedNote,
     });
+  });
+
+  it("should update note as favorite", () => {
+    const note = {
+      id: "123",
+      createdAt: new Date().getTime(),
+      updatedAt: new Date().getTime(),
+      content: "hello",
+    };
+    const notes = {
+      [note.id]: note,
+    };
+    const favNote = { ...note, isFavorite: true };
+    const notfavNote = { ...note, isFavorite: false };
+
+    storeAllNotes(notes);
+
+    const isFavNote = favoriteNote(note);
+    expect(isFavNote).toEqual(favNote);
+    const isNotFavNote = favoriteNote(favNote);
+    expect(isNotFavNote).toEqual(notfavNote);
   });
 });

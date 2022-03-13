@@ -24,6 +24,11 @@ export function updateNote(note: Note) {
   return upsertNote(updatedNote);
 }
 
+export function favoriteNote(note: Note) {
+  const updatedNote = { ...note, isFavorite: !note?.isFavorite };
+  return upsertNote(updatedNote);
+}
+
 // for testing
 export function storeAllNotes(notes: NoteDict) {
   storeNotes(notes);
