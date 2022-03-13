@@ -80,8 +80,10 @@ function App() {
     <div className="root">
       <div className="app">
         <div className="c-notes-list">
-          <h1>Local Notes</h1>
-          <button onClick={() => handleAddNote("")}>+ Add Note</button>
+          <div>
+            <h1>Local Notes</h1>
+            <button onClick={() => handleAddNote("")}>+ Add Note</button>
+          </div>
           {notes
             .sort((a, b) => {
               // sort by updatedAt
