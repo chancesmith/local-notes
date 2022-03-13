@@ -1,22 +1,44 @@
-import { createNote, getAllNotes } from "./api_notes";
+import {
+  createNote,
+  getAllNotes,
+  storeAllNotes,
+  updateNote,
+} from "./api_notes";
 import { advanceTo, clear } from "jest-date-mock";
 import * as db from "./db_interface";
 
 // mock local storage
-const localStorageMock = function () {
-  let store: any = {};
-  return {
-    getItem: function (key: string) {
-      return store[key] || null;
-    },
-    setItem: function (key: string, value: string) {
-      store[key] = value.toString();
-    },
-    clear: function () {
-      store = {};
-    },
-  };
-};
+class LocalStorageMock {
+  // set store type
+  store: { [key: string]: string };
+
+  constructor() {
+    this.store = {};
+  }
+
+  clear() {
+    this.store = {};
+  }
+
+  getItem(key: string) {
+    return this.store[key] || null;
+  }
+
+  setItem(key: string, value: string) {
+    this.store[key] = value;
+  }
+
+  removeItem(key: string) {
+    delete this.store[key];
+  }
+
+  length() {
+    return Object.keys(this.store).length;
+  }
+}
+
+// @ts-ignore
+global.localStorage = new LocalStorageMock();
 
 describe("notes api", () => {
   beforeEach(() => {
@@ -37,6 +59,7 @@ describe("notes api", () => {
     const expectedNote = {
       id: (0.12345).toString(36).substring(2),
       createdAt: new Date().getTime(),
+      updatedAt: new Date().getTime(),
       content: "hello",
     };
 
@@ -56,6 +79,7 @@ describe("notes api", () => {
       [id]: {
         id: id,
         createdAt: new Date().getTime(),
+        updatedAt: new Date().getTime(),
         content: "hello",
       },
     };
@@ -63,5 +87,44 @@ describe("notes api", () => {
     const result = getAllNotes();
     expect(result).toEqual(expectedNotes);
     expect(getNotesSpy).toHaveBeenCalledTimes(1);
+  });
+  // it("should store all notes", () => {
+  //   const note = {
+  //     id: "123",
+  //     createdAt: new Date().getTime(),
+  //     updatedAt: new Date().getTime(),
+  //     content: "hello",
+  //   };
+  //   const notes = {
+  //     [note.id]: note,
+  //   };
+  //   const storeNotesSpy = jest.spyOn(db, "storeNotes");
+  //   const result = storeAllNotes(notes);
+  //   expect(storeNotesSpy).toHaveBeenCalledTimes(1);
+  //   expect(getAllNotes()).toEqual(notes);
+  // });
+  it("should update note", () => {
+    const note = {
+      id: "123",
+      createdAt: new Date().getTime(),
+      updatedAt: new Date().getTime(),
+      content: "hello",
+    };
+    const notes = {
+      [note.id]: note,
+    };
+    const updatedNote = { ...note, content: "hello world" };
+    const updatedNoteExpected = {
+      ...updatedNote,
+    };
+
+    storeAllNotes(notes);
+
+    const result = updateNote(updatedNote);
+    expect(result).toEqual(updatedNoteExpected);
+    expect(getAllNotes()).toStrictEqual({
+      ...notes,
+      [updatedNote.id]: updatedNote,
+    });
   });
 });

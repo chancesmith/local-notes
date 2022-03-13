@@ -5,7 +5,7 @@ export function upsertNote(note: Note) {
   return note;
 }
 
-export function getNotes() {
+export function getNotes(): NoteDict {
   return JSON.parse(localStorage.getItem("notes") || "{}");
 }
 
@@ -22,4 +22,8 @@ export function softDeleteNote(note: Note) {
     JSON.stringify({ ...notes, [note.id]: updatedNote })
   );
   return updatedNote;
+}
+
+export function storeNotes(notes: NoteDict) {
+  localStorage.setItem("notes", JSON.stringify(notes));
 }
