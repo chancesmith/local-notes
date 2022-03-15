@@ -79,12 +79,12 @@ function App() {
 
   return (
     <div className="root">
+      <div>
+        <h1>Local Notes</h1>
+        <button onClick={() => handleAddNote("")}>+ Add Note</button>
+      </div>
       <div className="app">
         <div className="c-notes-list">
-          <div>
-            <h1>Local Notes</h1>
-            <button onClick={() => handleAddNote("")}>+ Add Note</button>
-          </div>
           {notes
             .sort((a, b) => {
               // sort by updatedAt
@@ -144,19 +144,17 @@ function App() {
         <div className="c-edit-note">
           {selectedNote ? (
             <>
-              <h2>Edit Note</h2>
-
-              {selectedNote.content.length ? (
-                <h3>
-                  {selectedNote.content.split("\n").slice(0, 1).join(" ")}
-                  <i
-                    className={`c-star fa-star c-edit-note__star ${
-                      selectedNote.isFavorite ? "fas c-star--favorited" : "fal"
-                    }`}
-                    onClick={() => handleFavoriteNote(selectedNote)}
-                  />
-                </h3>
-              ) : null}
+              <h2 className="c-edit-note__title">
+                {selectedNote.content.length > 0
+                  ? selectedNote.content.split("\n").slice(0, 1).join(" ")
+                  : "New Note"}
+                <i
+                  className={`c-star fa-star c-edit-note__star ${
+                    selectedNote.isFavorite ? "fas c-star--favorited" : "fal"
+                  }`}
+                  onClick={() => handleFavoriteNote(selectedNote)}
+                />
+              </h2>
               <textarea
                 ref={textareaRef}
                 value={selectedNote.content}
